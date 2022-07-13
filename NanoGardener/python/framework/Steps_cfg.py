@@ -1766,6 +1766,21 @@ Steps = {
                   'subTargets' : ['ggH_LHE_MEs'],
                },
 
+   'LHE_DiffXSecAnalyzer' : {
+                  'isChain'  : True ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+#                  'selection': '"(nLepton >= 2 && \
+                               # Alt$(Lepton_pt[2],0) < 10. && \
+                               # Lepton_pdgId[0]*Lepton_pdgId[1] < 0 && \
+                               # Lepton_pt[0] > 25. && \
+                               # Lepton_pt[1] > 20. && \
+                               # mll > 12. && \
+                               # PuppiMET_pt > 20. && \
+                               # ptll > 30.)"',
+                  'subTargets' : ['LHE_DiffXSec'],
+               },
+
 # mnonoH dileptonic skims
 
   'monoHSkim2016' : { 
@@ -5538,6 +5553,14 @@ Steps = {
       'subTargets': ['fakeWstep1l','CorrFatJetData', 'CleanFatJet', 'VBSjjlnu_pairing', 'VBSjjlnu_kin'],
       'onlySample' : vbsjjlnu_samples_data2018
   },
+
+  'LHE_DiffXSec' : {
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.LHE_DiffXSecAnalyzer' ,
+                  'module'   : 'LHE_DiffXSecAnalyzer("RPLME_SAMPLE", RPLME_YEAR)',
+               },
 
   'ggH_LHE_MEs' : { 
                   'isChain'  : False ,
