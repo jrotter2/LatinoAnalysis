@@ -2,4 +2,5 @@
 *.pyc
 *.so
 *.d
+MultiDraw/*
 __init__.py
