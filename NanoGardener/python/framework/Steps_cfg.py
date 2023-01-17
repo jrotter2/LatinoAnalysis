@@ -5430,6 +5430,87 @@ Steps = {
                                 ] ,
                  },
 
+  'ggH_AddHWW_Offshell_SIG_Wgts' : {
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.reWgtCombine' ,
+                  'module'   : 'ReWgtCombineSamples("RPLME_SAMPLE", RPLME_YEAR, "SIG", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_SIG_RenormWgts_ggH.txt", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_SIG_CombinedWgts_ggH.txt")',
+               },
+
+  'VBF_AddHWW_Offshell_SIG_Wgts' : {
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.reWgtCombine' ,
+                  'module'   : 'ReWgtCombineSamples("RPLME_SAMPLE", RPLME_YEAR, "SIG", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_SIG_RenormWgts_VBF.txt", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_SIG_CombinedWgts_VBF.txt")',
+               },
+
+  'ggH_AddHWW_Offshell_CONT_Wgts' : {
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.reWgtCombine' ,
+                  'module'   : 'ReWgtCombineSamples("RPLME_SAMPLE", RPLME_YEAR, "CONT", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_CONT_RenormWgts_ggH.txt", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_CONT_CombinedWgts_ggH.txt")',
+               },
+
+  'VBF_AddHWW_Offshell_CONT_Wgts' : {
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.reWgtCombine' ,
+                  'module'   : 'ReWgtCombineSamples("RPLME_SAMPLE", RPLME_YEAR, "CONT", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_CONT_RenormWgts_VBF.txt", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_CONT_CombinedWgts_VBF.txt")',
+               },
+
+  'ggH_AddHWW_Offshell_SIGplusCONT_Wgts' : {
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.reWgtCombine' ,
+                  'module'   : 'ReWgtCombineSamples("RPLME_SAMPLE", RPLME_YEAR, "SIGplusCONT", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_SIGplusCONT_RenormWgts_ggH.txt", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_SIGplusCONT_CombinedWgts_ggH.txt")',
+               },
+
+  'VBF_AddHWW_Offshell_SIGplusCONT_Wgts' : {
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.reWgtCombine' ,
+                  'module'   : 'ReWgtCombineSamples("RPLME_SAMPLE", RPLME_YEAR, "SIGplusCONT", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_SIGplusCONT_RenormWgts_VBF.txt", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_SIGplusCONT_CombinedWgts_VBF.txt")',
+               },
+
+  'ggH_LHE_MEs' : { 
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.LHE_MEMaker' ,
+                  'module'   : 'LHE_MEMaker("RPLME_SAMPLE", RPLME_YEAR, "LatinoAnalysis/NanoGardener/python/data/LHEProbabilities/GG_SIG_WW_0PM_H-HMASS-_POWHEG.me", "LatinoAnalysis/NanoGardener/python/data/LHEProbabilities/xsecs_ggH.txt")',
+               },
+
+  'VBF_LHE_MEs' : { 
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.LHE_MEMaker' ,
+                  'module'   : 'MHParametrizedMasses("RPLME_SAMPLE", "LatinoAnalysis/NanoGardener/python/data/LHEProbabilities/VBF_SIG_WW_0PM_H-HMASS-_POWHEG.me", "LatinoAnalysis/NanoGardener/python/data/LHEProbabilities/xsecs_vbf.txt")',
+               },
+
+  'WH_LHE_MEs' : { 
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.LHE_MEMaker' ,
+                  'module'   : 'MHParametrizedMasses("RPLME_SAMPLE", "LatinoAnalysis/NanoGardener/python/data/LHEProbabilities/WH_SIG_WW_0PM_H-HMASS-_POWHEG.me")',
+               },
+
+  'ZH_LHE_MEs' : { 
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.LHE_MEMaker' ,
+                  'module'   : 'MHParametrizedMasses("RPLME_SAMPLE", "LatinoAnalysis/NanoGardener/python/data/LHEProbabilities/ZH_SIG_WW_0PM_H-HMASS-_POWHEG.me")',
+               },
+
+
 
   ##################################################################
   ########### VBSjjlnu semileptonic analysis SKIM
