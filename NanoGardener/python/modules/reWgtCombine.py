@@ -42,7 +42,7 @@ class ReWgtCombineSamples(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.newbranches =  ['HWWOffshell_Weight']
+        self.newbranches =  ['HWWOffshell_combWeight_' + str(self.sample_type)]
         for nameBranches in self.newbranches :
             self.out.branch(nameBranches  ,  "F")
 
@@ -81,10 +81,5 @@ class ReWgtCombineSamples(Module):
                 mass_window_index = i
                 break
 
-        MC_event_wgt = event.p_Gen_GG_SIG_kappaTopBot_1_ghz1_1_MCFM
-        if(self.sample_type is "VBF"):
-            MC_event_wgt = event.JJEW_SIG_ghv1_1_MCFM
-
-
-        self.out.fillBranch('HWWOffshell_Weight', MC_event_wgt*event.p_Gen_CPStoBWPropRewgt*event.XSWeight*self.combineWgts[mass_window_index]*self.renormWgt)
+        self.out.fillBranch('HWWOffshell_combWeight_' + str(self.sample_type), self.combineWgts[mass_window_index]*self.renormWgt)
         return True

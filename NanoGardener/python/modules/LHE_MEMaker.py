@@ -3,7 +3,6 @@ import math
 import numpy
 import ctypes
 ROOT.PyConfig.IgnoreCommandLineOptions = True
-
 from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collection 
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.collectionMerger import collectionMerger
@@ -33,8 +32,8 @@ class LHE_MEMaker(Module):
         ROOT.gInterpreter.Declare('#include "/eos/user/f/fernanpe/CMSSW_10_6_4/src/MelaAnalytics/EventContainer/interface/MELAEvent.h"')
         ROOT.gInterpreter.Declare('#include "/eos/user/f/fernanpe/CMSSW_10_6_4/src/IvyFramework/IvyAutoMELA/interface/IvyMELAHelpers.h"')
         ROOT.gInterpreter.Declare('#include "/eos/user/f/fernanpe/CMSSW_10_6_4/src/JHUGenMELA/MELA/interface/PDGHelpers.h"')
+        ROOT.gInterpreter.Declare('#include "/eos/user/f/fernanpe/CMSSW_10_6_4/src/JHUGenMELA/MELA/interface/TUtil.hh"')
         ROOT.gInterpreter.Declare('#include "/eos/user/f/fernanpe/CMSSW_10_6_4/src/MelaAnalytics/EventContainer/interface/HiggsComparators.h"')
-
         # LOAD THE theLHEProbabilities COLLECTION
 
         lheinfo = {}
@@ -53,27 +52,27 @@ class LHE_MEMaker(Module):
             
         # Get the Xsec and BR for this particular mass value from the txt file, and Build the binning
 
-        xsecs = open(self.cmssw_base+'/src/'+xsecs_path) # REF: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBSMAt13TeV
-        central_values = []
+        # xsecs = open(self.cmssw_base+'/src/'+xsecs_path) # REF: https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageBSMAt13TeV
+        # central_values = []
         
-        for line in xsecs:
-            central_values.append(float(line.split()[0]))
-            if int(line.split()[0]) == int(self.mass):
-                self.xsec = float(line.split()[1])
-                self.br = float(line.split()[2])
+        # for line in xsecs:
+        #     central_values.append(float(line.split()[0]))
+        #     if int(line.split()[0]) == int(self.mass):
+        #         self.xsec = float(line.split()[1])
+        #         self.br = float(line.split()[2])
                 
-        self.final_binning = []
+        # self.final_binning = []
 
-        for idx,value in enumerate(central_values):
-            if(idx < len(central_values)-1):
-                edgevalue = (value+central_values[idx+1])/2 
-                if idx == 0:
-                    self.final_binning.append(70.) #from Ulascan [70,.....,13000]
-                    #self.final_binning.append(value - abs(value-edgevalue)) #another option?
-                self.final_binning.append(edgevalue)
-            else:
-                self.final_binning.append(13000.)
-                #self.final_binning.append(abs(value-edgevalue) + value)
+        # for idx,value in enumerate(central_values):
+        #     if(idx < len(central_values)-1):
+        #         edgevalue = (value+central_values[idx+1])/2 
+        #         if idx == 0:
+        #             self.final_binning.append(70.) #from Ulascan [70,.....,13000]
+        #             #self.final_binning.append(value - abs(value-edgevalue)) #another option?
+        #         self.final_binning.append(edgevalue)
+        #     else:
+        #         self.final_binning.append(13000.)
+        #         #self.final_binning.append(abs(value-edgevalue) + value)
                 
         #print(self.final_binning) #Is this the binning we want to have?
 
@@ -117,12 +116,10 @@ class LHE_MEMaker(Module):
         
         # Get new ME branches names
         self.strMEs = []
-        self.ME_weights = []
         mes = ROOT.std.unordered_map('string','float')() 
         self.lheMEblock.getBranchValues(mes)
         for me in mes:
             self.strMEs.append(me.first)
-            self.ME_weights.append(me.second)
 
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
@@ -130,7 +127,7 @@ class LHE_MEMaker(Module):
     def analyze(self, event):
         """process event, return True (go to next module) or False (fail, go to next event)"""
         
-        gen_dme_hsm   = -999
+        #print(event.run, event.luminosityBlock, event.event)
 
         self.LHE = Collection(event,"LHEPart")
         Gen = Collection(event,"GenPart")
@@ -151,7 +148,7 @@ class LHE_MEMaker(Module):
                 outgoing.push_back(temp)
                 outgoingIDs.push_back(part.pdgId)
             elif part.status == -1:
-                temp.SetPxPyPzE(0.,0., abs(part.incomingpz)*6500, abs(part.incomingpz)*6500)
+                temp.SetPxPyPzE(0.,0., part.incomingpz, abs(part.incomingpz))
                 incoming.push_back(temp)
                 incomingIDs.push_back(part.pdgId)
 
@@ -206,15 +203,17 @@ class LHE_MEMaker(Module):
                 
         
         LHEEvent.constructTopCandidates()
-        # FOLLOWING BLOCK DOES NOT SEEM TO BE NEEDED IN OUR CASE: https://github.com/usarica/CommonLHETools/blob/master/LHEHandler/src/LHEHandler.cc#L183-L198
-        # matchedTops = ROOT.vector('MELATopCandidate_t')()
-        # for writtenGenTopCand in writtenGenTopCands:
-        #     tmpCand = ROOT.TopComparators.matchATopToParticle(LHEEvent, writtenGenTopCand)
-        #     if tmpCand:
-        #         matchedTops.push_back(tmpCand)
-        # for tmpCand in LHEEvent.getTopCandidates():
-        #     if (ROOT.std.find(matchedTops.begin, matchedTops.end, tmpCand)==matchedTops.end):
-        #         tmpCand.setSelected(False)
+
+        # Disable tops unmatched to a gen. top
+        matchedTops = ROOT.vector('MELATopCandidate_t')()
+        for writtenGenTopCand in writtenGenTopCands:
+            tmpCand = ROOT.TopComparators.matchATopToParticle(LHEEvent, writtenGenTopCand)
+            if tmpCand:
+                matchedTops.push_back(tmpCand)
+        for tmpCand in LHEEvent.getTopCandidates():
+            if tmpCand not in matchedTops:
+                tmpCand.setSelected(False)
+
 
         LHEEvent.constructVVCandidates(self.VVMode, self.VVDecayMode)
         LHEEvent.addVVCandidateAppendages()
@@ -232,24 +231,26 @@ class LHE_MEMaker(Module):
             genCand = ROOT.HiggsComparators.candidateSelector(LHEEvent, ROOT.HiggsComparators.BestZ1ThenZ2ScSumPt, self.VVMode);
 
         # MAKE THE IvyAutoMELA CALL 
-
+        #print("====================================================0")
+        #ROOT.TUtil.PrintCandidateSummary(genCand)
+        #print("====================================================0")
         ROOT.IvyMELAHelpers.melaHandle.setCurrentCandidate(genCand)
+
         self.lheMEblock.computeMELABranches()
         
 
         ################# REWEIGHTING STEP ##########################
         # Needed inputs: binning, xsec, BR, gen MC weight, LHE MEs weights
 
-        #event.genWeight #-> nanoAOD genWeight branch: nominal generator-level weight, computed as the product of the nominal weight from LHE and the nominal weight from Pythia
-        #self.final_binning 
-        #self.xsec
-        #self.br
-        #self.ME_weights
-        
+        # event.genWeight -> nanoAOD genWeight branch: nominal generator-level weight, computed as the product of the nominal weight from LHE and the nominal weight from Pythia
+        # self.final_binning 
+        # self.xsec
+        # self.br
+        # L119-123 -> do something similar to get the computed LHE ME weights from me.second
+
 
 
         # FILL THE OUTPUT BRANCHES
-        
 
 
         self.out.fillBranch('LHECandMass', genCand.m())
