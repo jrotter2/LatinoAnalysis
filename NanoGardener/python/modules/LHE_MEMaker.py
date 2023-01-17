@@ -117,10 +117,12 @@ class LHE_MEMaker(Module):
         
         # Get new ME branches names
         self.strMEs = []
+        self.ME_weights = []
         mes = ROOT.std.unordered_map('string','float')() 
         self.lheMEblock.getBranchValues(mes)
         for me in mes:
             self.strMEs.append(me.first)
+            self.ME_weights.append(me.second)
 
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         pass
@@ -238,15 +240,16 @@ class LHE_MEMaker(Module):
         ################# REWEIGHTING STEP ##########################
         # Needed inputs: binning, xsec, BR, gen MC weight, LHE MEs weights
 
-        # event.genWeight -> nanoAOD genWeight branch: nominal generator-level weight, computed as the product of the nominal weight from LHE and the nominal weight from Pythia
-        # self.final_binning 
-        # self.xsec
-        # self.br
-        # L119-123 -> do something similar to get the computed LHE ME weights from me.second
-
+        #event.genWeight #-> nanoAOD genWeight branch: nominal generator-level weight, computed as the product of the nominal weight from LHE and the nominal weight from Pythia
+        #self.final_binning 
+        #self.xsec
+        #self.br
+        #self.ME_weights
+        
 
 
         # FILL THE OUTPUT BRANCHES
+        
 
 
         self.out.fillBranch('LHECandMass', genCand.m())

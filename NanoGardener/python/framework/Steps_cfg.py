@@ -1766,6 +1766,21 @@ Steps = {
                   'subTargets' : ['ggH_LHE_MEs'],
                },
 
+  'AddHWW_Offshell_Wgts' : {
+                  'isChain'  : True ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+#                  'selection': '"(nLepton >= 2 && \
+                               # Alt$(Lepton_pt[2],0) < 10. && \
+                               # Lepton_pdgId[0]*Lepton_pdgId[1] < 0 && \
+                               # Lepton_pt[0] > 25. && \
+                               # Lepton_pt[1] > 20. && \
+                               # mll > 12. && \
+                               # PuppiMET_pt > 20. && \
+                               # ptll > 30.)"',
+                  'subTargets' : ['ggH_AddHWW_Offshell_Wgts'],
+               },
+
    'LHE_DiffXSecAnalyzer' : {
                   'isChain'  : True ,
                   'do4MC'    : True  ,
@@ -1783,7 +1798,7 @@ Steps = {
 
 # mnonoH dileptonic skims
 
-  'monoHSkim2016' : { 
+  'monoHSkim2016' : {
                   'isChain'  : True ,
                   'do4MC'    : True  ,
                   'do4Data'  : True ,
@@ -5560,6 +5575,20 @@ Steps = {
                   'do4Data'  : False ,
                   'import'   : 'LatinoAnalysis.NanoGardener.modules.LHE_DiffXSecAnalyzer' ,
                   'module'   : 'LHE_DiffXSecAnalyzer("RPLME_SAMPLE", RPLME_YEAR)',
+               },
+  'ggH_AddHWW_Offshell_Wgts' : {
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.reWgtCombine.py' ,
+                  'module'   : 'ReWgtCombineSamples("RPLME_SAMPLE", RPLME_YEAR, "ggH", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_RenormWgts_ggH.txt", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_CombinedWgts_ggH.txt")',
+               },
+  'VBF_AddHWW_Offshell_Wgts' : {
+                  'isChain'  : False ,
+                  'do4MC'    : True  ,
+                  'do4Data'  : False ,
+                  'import'   : 'LatinoAnalysis.NanoGardener.modules.reWgtCombine.py' ,
+                  'module'   : 'ReWgtCombineSamples("RPLME_SAMPLE", RPLME_YEAR,"VBF", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_RenormWgts_VBF.txt", "LatinoAnalysis/NanoGardener/python/data/hwwOffshellWgts_CombinedWgts_VBF.txt")',
                },
 
   'ggH_LHE_MEs' : { 
