@@ -16,9 +16,12 @@ Sites = {
   'cern' : {
               'lsCmd'       : 'ls' ,
               'mkDir'       : True ,
-              'xrootdPath'  : 'root://eoscms.cern.ch/' ,
-              'treeBaseDir' : '/eos/cms/store/group/phys_higgs/cmshww/amassiro/HWWNano/' ,
-            #   'treeBaseDir' : '/eos/cms/store/group/phys_smp/VJets_NLO_VBSanalyses/', 
+              'xrootdPath'  : 'root://eosuser.cern.ch/' ,
+#              'xrootdPath'  : 'root://eoscms.cern.ch/' ,
+              'xrootduserPath'  : 'root://eosuser.cern.ch/' ,
+              'xrootduserPath_hww' : 'root://eosuser.cern.ch//eos/user/t/tcarnaha/Summer_2022/HWW_Ntuples/' ,
+      #'xrootduserPath_hww' : 'root://eoscms.cern.ch//eos/cms/store/group/phys_higgs/cmshww/amassiro/HWWNano/' ,
+              'treeBaseDir' : '/eos/user/t/tcarnaha/Summer_2022/HWW_Ntuples/' ,
               'batchQueues' : ['8nh','1nd','2nd','1nw'],
               'slc_ver'     : 7
            } ,
@@ -26,7 +29,7 @@ Sites = {
   'sdfarm' : {
               'lsCmd'       : 'ls' ,
               'mkDir'       : False ,
-	            'xrootdPath'  : 'root://cms-xrdr.private.lo:2094/',
+	      'xrootdPath'  : 'root://cms-xrdr.private.lo:2094/',
               'treeBaseDir' : '/xrootd/store/user/jhchoi/Latino/HWWNano/',
              } ,
               #'lsCmd'       : 'xrdfs cms-xrdr.sdfarm.kr ls' ,

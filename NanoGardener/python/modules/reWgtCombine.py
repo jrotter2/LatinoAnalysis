@@ -2,39 +2,44 @@ from PhysicsTools.NanoAODTools.postprocessing.framework.datamodel import Collect
 from PhysicsTools.NanoAODTools.postprocessing.framework.eventloop import Module
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.collectionMerger import collectionMerger
 import ROOT
+import json
 import os.path
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 
 class ReWgtCombineSamples(Module):
-    def __init__(self, sample, year, sample_type, renormWgt_path, combineWgt_path):
+    def __init__(self, sample, year, hww_wgt_path):
         print("########################", sample)
         self.sample = sample
         self.year = year
         self.cmssw_base = os.getenv('CMSSW_BASE')
         self.cmssw_arch = os.getenv('SCRAM_ARCH')
 
-        self.sample_type = sample_type
+        
+        self.sample_type = "ggH"
+        if(str(self.sample).__contains__("VBF")):
+            self.sample_type = "VBF"
 
         self.sampleMass = str(self.sample)[str(self.sample).find('_M') + 2:]
+
+        sample_json_id = "HM_" + str(self.sampleMass)
         print("SAMPLE MASS: " + str(self.sampleMass) +  " | SAMPLE TYPE: " + str(self.sample_type))
 
-        self.renormWgt =  1
-        renorm_wgt_file = open(renormWgt_path)
-        for line in renorm_wgt_file.readlines():
-            line_comps = line.split("\t")
-            if(int(line_comps[0]) == int(self.sampleMass)):
-                self.renormWgt = float(line_comps[1])
-        print("RENORM_WGT: ", self.renormWgt)
+        hww_wgt_file = open(self.cmssw_base + '/src/' + hww_wgt_path + "_" + self.sample_type + ".json")
+        hww_wgt_contents = hww_wgt_file.read()
+        hww_wgts = json.loads(hww_wgt_contents)
 
-        self.combineWgts =  []
-        combine_wgt_file = open(combineWgt_path)
-        for line in combine_wgt_file.readlines(): 
-            line_comps = line.split(":")
-            if(int(line_comps[0]) == int(self.sampleMass)):
-                self.combineWgts = [float(wgt) for wgt in line_comps[1].split(",")]
-        print("COMBINE_WGTS: ", self.combineWgts)
+        self.renormWgt = hww_wgts[sample_json_id]["RENORM_WGT"]
+        self.combineWgt = hww_wgts[sample_json_id]["COMB_WGTS"]
 
+        self.lossCompWgt = hww_wgts[sample_json_id]["LOSS_COMP"]
+
+        self.cutoffSIG = hww_wgts[sample_json_id]["SIG_CUTOFF"]
+        self.cutoffCONT = hww_wgts[sample_json_id]["CONT_CUTOFF"]
+        self.cutoffSIGplusCONT = hww_wgts[sample_json_id]["SIGplusCONT_CUTOFF"]    
+        print("RENORM WGT: " + str(self.renormWgt))
+        print("COMB WGT:" + str(self.combineWgt))
+        print("LOSS COMP:" + str(self.lossCompWgt))
         pass
 
     def beginJob(self, histFile=None, histDirName=None):
@@ -42,7 +47,7 @@ class ReWgtCombineSamples(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
-        self.newbranches =  ['HWWOffshell_combWeight_' + str(self.sample_type)]
+        self.newbranches =  ['HWWOffshell_combineWgt']
         for nameBranches in self.newbranches :
             self.out.branch(nameBranches  ,  "F")
 
@@ -74,13 +79,36 @@ class ReWgtCombineSamples(Module):
         m_ww = genPart[w_ids[0]].p4() + genPart[w_ids[1]].p4()
         m_ww_mass = m_ww.M()
 
-        mass_window_edges = [0,136.7,148.3,165,175,185,195,205,220,240,260,285,325,275,450,550,650,750,850,950,1250,1750,2250,2750,14000]
+        mass_window_edges = [0,136.7,148.3,165,175,185,195,205,220,240,260,285,325,375,425,475,525,575,650,750,850,950,1250,1750,2250,2750,14000]
 
         for i in range(0, len(mass_window_edges)-1):
             if(m_ww_mass > mass_window_edges[i] and m_ww_mass < mass_window_edges[i+1]):
                 mass_window_index = i
                 break
 
-        self.out.fillBranch('HWWOffshell_combWeight_' + str(self.sample_type), self.combineWgts[mass_window_index]*self.renormWgt)
+        if(mass_window_index >= len(self.combineWgt)):
+            print("EVENT OUT OF BOUNDS >>> MASS: " + str(m_ww_mass) + ", WINDOW: " + str(mass_window_index))
+            print("Adding to overflow bin...")
+            mass_window_index = len(self.combineWgt)-1
+
+        mc_wgt_SIG = event.p_Gen_GG_SIG_kappaTopBot_1_ghz1_1_MCFM
+        mc_wgt_CONT = event.p_Gen_GG_BKG_MCFM
+        mc_wgt_SIGplusCONT = event.p_Gen_GG_BSI_kappaTopBot_1_ghz1_1_MCFM
+        if(self.sample_type == "VBF"):
+            mc_wgt_SIG = event.p_Gen_JJEW_SIG_ghv1_1_MCFM
+            mc_wgt_CONT = event.p_Gen_JJEW_BKG_MCFM
+            mc_wgt_SIGplusCONT = event.p_Gen_JJEW_BSI_ghv1_1_MCFM
+
+        SIG_wgt = mc_wgt_SIG*event.p_Gen_CPStoBWPropRewgt*event.XSWeight
+        CONT_wgt = mc_wgt_CONT*event.p_Gen_CPStoBWPropRewgt*event.XSWeight 
+        SIGplusCONT_wgt = mc_wgt_SIGplusCONT*event.p_Gen_CPStoBWPropRewgt*event.XSWeight
+ 
+        if(SIG_wgt > self.cutoffSIG[mass_window_index] or CONT_wgt > self.cutoffCONT[mass_window_index] or SIGplusCONT_wgt > self.cutoffSIGplusCONT[mass_window_index]):
+            self.out.fillBranch('HWWOffshell_combineWgt', 0)
+        elif(SIG_wgt == 0 and CONT_wgt == 0 and SIGplusCONT_wgt == 0):
+            self.out.fillBranch('HWWOffshell_combineWgt', 0)
+        else:
+            self.out.fillBranch('HWWOffshell_combineWgt', self.renormWgt * self.combineWgt[mass_window_index] * self.lossCompWgt[mass_window_index])
+
         return True
 
